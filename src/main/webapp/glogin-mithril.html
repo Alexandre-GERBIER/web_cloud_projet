@@ -121,18 +121,24 @@ searchUser(name){
 			"googleToken": Profile.ID,
 			"userName": name
 		}
-	}).then(function(result) {
+	})
+/*
+	.then(function(result) {
 		return(
 			m("div", {class:'container'},[
 				m("div", {class:'container',
-					for( i = 0; i < result.len() ; i++) {
+					/*for( i = 0; i < result.len() ; i++) {
 						name: result[i].firstName + ' ' + result[i].lastName;
-					}, [
-						m('button',{class:"button", onclick: function(e) {Profile.userProfile(result[i])}}, name+"")
+					},
+					[
+						m('button',{class:"button", onclick: function(e) {
+							//Profile.userProfile(result[i])
+							console.log(result)
+						}}, "tmp")
 					])
 			]))
 		};
-	})
+	})*/
 },
 
 userProfile: function(user){
@@ -303,7 +309,7 @@ loadList: function() {
 			}
 		}
 
-		m.route(document.body, "/profile", {
+		m.route(document.body, "/login", {
 			"/profile": { onmatch: function() {
 				if (Profile.ID=="") {m.route.set("/login")}
 				else return Profile
