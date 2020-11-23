@@ -15,9 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet (
-        name = "LikeAPI",
-        description = "LikeAPI: like a post",
-        urlPatterns = "/api/like"
+        name = "unLikeAPI",
+        description = "unLikeAPI: unlike a post",
+        urlPatterns = "/api/unlike"
 )
 public class UnlikeServlet extends HttpServlet {
 

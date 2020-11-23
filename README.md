@@ -1,87 +1,54 @@
- # webandcloud
+ # Projet webandcloud
 
-**Be sure your maven has access to the web**
-* you should have file ~/.m2/settings.xml
-* otherwise cp ~molli-p/.m2/settings.xml ~/.m2/
+Projet réalisé par Alexandre Gerbier, commencé en groupe avec Allan Comisso, mais malgré l'approche du rendu il n'a fourni aucun travail sur le projet.
 
-```
-molli-p@remote:~/.m2$ cat settings.xml
-<settings>
- <proxies>
- <proxy>
-      <active>true</active>
-      <protocol>https</protocol>
-      <host>proxy.ensinfo.sciences.univ-nantes.prive</host>
-      <port>3128</port>
-    </proxy>
-  </proxies>
-</settings>
-```
+repo originel:
 
-## import and run in eclipse
-* install the code in your home:
-```
- cd ~
- git clone https://github.com/momo54/webandcloud.git
- cd webandcloud
- mvn install
-```
-* Change "sobike44" with your google project ID in pom.xml
-* Change "sobike44" with your google project ID in src/main/webapp/WEB-INF/appengine-web.xml
+https://github.com/AllanC56/webandcloud.git
 
-## Run in eclipse
+repo du rendu, que j'ai réalisé seul:
 
-* start an eclipse with gcloud plugin
-```
- /media/Enseignant/eclipse/eclipse
- or ~molli-p/eclipse/eclipse
- ```
-* import the maven project in eclipse
- * File/import/maven/existing maven project
- * browse to ~/webandcloud
- * select pom.xml
- * Finish and wait
- * Ready to deploy and run...
- ```
- gcloud app create error...
- ```
- Go to google cloud shell console (icon near your head in google console)
- ```
- gcloud app create
- ```
+https://github.com/Alexandre-GERBIER/web_cloud_projet.git
+
+## Interface
+
+L'interface rendue n'est pas fonctionnelle.
+
+adresse de l'interface:
+https://myfirstproject-290312.ew.r.appspot.com/glogin-mithril.html#!/profile
+
+## API REST
+Le dossier exemples_requetes contient un export de 3 requètes faites avec Postman sur l'API.
+Chaque requète doit contenir dans son Header un champ googleToken contenant le token d'authentification google. 
+Pour les utilisateurs que j'ai créés sans compte google, le token est remplacé pa
+Prénom-Nom1-Nom2 .
+
+Liste des routes de l'API:
+* GET  /api/user (fonctionne): 
+Header : userName 
+
+le nom ou le prénom de l'utilisateur recherché.
+
+* POST /api/unlike (fonctionne):
 
 
-## Install and Run 
-* (gcloud SDK must be installed first. see https://cloud.google.com/sdk/install)
- * the gcloud command should be in your path. Run the following command to initialize your local install of gcloud.
-```
-gcloud init
-```
-* git clone https://github.com/momo54/webandcloud.git
-* cd webandcloud
-* running local (http://localhost:8080):
-```
-mvn package
-mvn appengine:run
-```
-* Deploying at Google (need gcloud configuration, see error message -> tell you what to do... 
-)
-```
-mvn appengine:deploy
-gcloud app browse
-```
 
-# Access REST API
-* (worked before) 
-```
-https://<yourapp>.appstpot.com/_ah/api/explorer
-```
-* New version of endpoints (see https://cloud.google.com/endpoints/docs/frameworks/java/adding-api-management?hl=fr):
-```
-mvn clean package
-mvn endpoints-framework:openApiDocs
-gcloud endpoints services deploy target/openapi-docs/openapi.json 
-mvn appengine:deploy
-```
+## Parties non fonctionnelles du projet
+* La gestion des images
 
-mithril js 
+Je n'ai pas réussi à me servir des Blob et blobstore pour stocker les images. Je n'ai pas réussi à gérer correctement le formulaire html pour qu'il y ait à la fois les paramètre nécessaires au BlobStore et à mon API.
+
+* La récupération des posts récent d'un utilisateur
+
+La requète s'exécute mais en renvoie aucun post
+
+## Données présentes
+* utilisateurs
+
+Le Datastore contient 600 utilisateurs, ayant chacun un post. 
+
+L'utilisateur Jake Smith-Peralta a 599 followers et suit 599 personnes.
+
+L'utilisateur Jake Smith-Holt a 100 followers et suit 100 personnes.
+
+L'utilisateur Jake Smith-Santiago a 10 followers et suit 10 personnes.
