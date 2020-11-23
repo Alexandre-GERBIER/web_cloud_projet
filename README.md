@@ -21,15 +21,38 @@ https://myfirstproject-290312.ew.r.appspot.com/glogin-mithril.html#!/profile
 Le dossier exemples_requetes contient un export de 3 requètes faites avec Postman sur l'API.
 Chaque requète doit contenir dans son Header un champ googleToken contenant le token d'authentification google. 
 Pour les utilisateurs que j'ai créés sans compte google, le token est remplacé pa
-Prénom-Nom1-Nom2 .
+Prénom-Nom1-Nom2 . Pour les requètes faisant appel en plus a un autre utilisateur (ex follow), il est identifié par 
+son adresse email, qui est passée dans la requètes.
 
 Liste des routes de l'API:
-* GET  /api/user (fonctionne): 
-Header : userName 
+* GET  /api/user (fonctionne): Header {userName }
 
 le nom ou le prénom de l'utilisateur recherché.
 
-* POST /api/unlike (fonctionne):
+* POST /api/unlike (fonctionnel): Header: {postId}
+
+* POST /api/unfollow (fonctionnel): Header : {userToUnFollow}
+
+* GET /api/timeline (non-fonctionnel) : Header {all} 
+
+Le paramètre all {true/false} sert à invalider le champ lastTimelineRetrieval de l'utilisateur
+
+*  GET /api/profile (fonctionnel) : Header {profileToGet}
+
+* POST /api/post (fonctionnel) : Header {image, description}
+
+* GET /api/post (fonctionel) : Header {posts} 
+
+posts est une liste de posts séparés par un "/" sous forme de chaîne de caractères
+
+* GET /api/login (fonctionnel) : Header {userEmail, userName} Crée un compte avec le token google s'il n'existe pas et renvoie l'url d'upload pour une image
+
+* POST /api/like (fonctionnel) : Header {postId}
+
+* POST /api/follow (fonctionnel) : Header {userToFollow}
+
+* GET /api/fill (fonctionnel) : rempli le datastore avec 600 utilisateurs
+
 
 ## Format des données
 Listes des différentes entités et de leurs propriétés:
