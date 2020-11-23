@@ -1,0 +1,134 @@
+{
+	"info": {
+		"_postman_id": "a7789569-54f2-43f1-a236-45de270c75b2",
+		"name": "exemplesRequetes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "https://myfirstproject-290312.ew.r.appspot.com/api/profile",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "googleToken",
+						"value": "Amy-Alderson-Alderson",
+						"type": "text"
+					},
+					{
+						"key": "profileToGet",
+						"value": "Jake.Smith-Peralta@fakemail.nantes",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"profile"
+					],
+					"query": [
+						{
+							"key": "googleToken",
+							"value": "ahVteWZpcnN0cHJvamVjdC0yOTAzMTJyJwsSBFVzZXIiHUFuZHkuQWxkZXJzb25AZmFrZW1haWwubmFudGVzDA",
+							"disabled": true
+						},
+						{
+							"key": "userName",
+							"value": "Diaz",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://myfirstproject-290312.ew.r.appspot.com/api/post",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "googleToken",
+						"value": "Jake-Smith-Peralta",
+						"type": "text"
+					},
+					{
+						"key": "image",
+						"value": "new image",
+						"type": "text"
+					},
+					{
+						"key": "description",
+						"value": "super description",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "description",
+							"value": "je suis un test",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"contentType": "image/png",
+							"type": "file",
+							"src": "/home/alex/Images/gcloud.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8080/api/post",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://myfirstproject-290312.ew.r.appspot.com/api/timeline",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "googleToken",
+						"value": "Jake-Smith-Santiago",
+						"type": "text"
+					},
+					{
+						"key": "all",
+						"value": "true",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/api/timeline",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"timeline"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
