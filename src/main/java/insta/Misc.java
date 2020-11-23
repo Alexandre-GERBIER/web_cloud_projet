@@ -97,16 +97,20 @@ public class Misc {
                     users.add(newUser);
                     //every user has one post
                     PostEntity.createPost(newUser,"image "+name+" "+lastNameTmp,"description");
+
                     int usersCreated = users.size();
                     if(usersCreated > 1 ){
                         //first user followed by everyone (599 pers)
                         UserEntity.follow(newUser, users.getFirst());
+                        UserEntity.follow(users.getFirst(), newUser);
                     }
                     if(usersCreated > 2 && usersCreated < 103){
                         UserEntity.follow(newUser, users.get(2));
+                        UserEntity.follow(users.get(2),newUser);
                     }
                     if(usersCreated > 3 && usersCreated < 14){
                         UserEntity.follow(newUser, users.get(3));
+                        UserEntity.follow(users.get(3), newUser);
                     }
                 }
             }

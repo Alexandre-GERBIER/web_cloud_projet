@@ -30,12 +30,9 @@ public class TimelineServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse response) throws IOException {
         String googleToken = req.getHeader("googleToken");
-        String userEmail = req.getHeader("userEmail");
+        String all = req.getHeader("all");
 
         DatastoreService datastore  = DatastoreServiceFactory.getDatastoreService();
-
-        System.out.println("Google token : " + googleToken);
-        System.out.println("USer Email : " + userEmail);
 
         Entity userIdentityVerified = UserEntity.googleAuthentification(googleToken);
 
@@ -47,10 +44,16 @@ public class TimelineServlet extends HttpServlet {
             response.setCharacterEncoding("UTF-8");
 
             try {
-                Key userKey = KeyFactory.createKey("User",userEmail);
+                Key userKey = userIdentityVerified.getKey();
+                Date oldTs;
 
-                Date oldTs = UserEntity.getLastTimelineretrival(userKey);
-                UserEntity.updateLastTimelineRetrieval(userKey);
+                if(all.equals("false") || all == null) {
+                    oldTs = UserEntity.getLastTimelineretrival(userKey);
+                    UserEntity.updateLastTimelineRetrieval(userKey);
+                } else {
+                    oldTs = new Date(0);
+                    System.out.println("timestamp" + oldTs);
+                }
 
                 Query queryFollowed = new Query("Follow")
                         .setFilter(new FilterPredicate("follower",Query.FilterOperator.EQUAL, userKey));
@@ -63,7 +66,7 @@ public class TimelineServlet extends HttpServlet {
                     Query queryPost = new Query("Post").
                             setFilter(CompositeFilterOperator.and(
                                     new FilterPredicate("timestamp", Query.FilterOperator.GREATER_THAN_OR_EQUAL, oldTs),
-                                    new FilterPredicate("User", FilterOperator.IN, followedUsers)));
+                                    new FilterPredicate("User", FilterOperator.EQUAL, usr.getKey())));
                     PreparedQuery preparedQuery = datastore.prepare(queryPost);
                     result.addAll(preparedQuery.asList(FetchOptions.Builder.withDefaults()));
                 }

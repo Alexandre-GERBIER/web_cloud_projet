@@ -43,6 +43,7 @@ public class ProfileServlet extends HttpServlet {
 
                  Query userPost = new Query("Post").setFilter(new Query.FilterPredicate("User", Query.FilterOperator.EQUAL,profileToGetKey ));
                  PreparedQuery prepareUserPost = datastore.prepare(userPost);
+
                  List<Entity> tmpPosts =prepareUserPost.asList(FetchOptions.Builder.withDefaults());
                  LinkedList<Post> posts = new LinkedList<Post>();
 

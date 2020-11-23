@@ -37,21 +37,19 @@ public class PostServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String description = req.getHeader("description");
-        String userEmail = req.getHeader("userEmail");
-
-        String imageUrl = getUploadedFileUrl(req, "image");
-
+        String image = req.getHeader("image");
         String googleToken = req.getHeader("googleToken");
 
-        Entity userIdentityVerified = UserEntity.googleAuthentification(googleToken);
+        //To use with blob to store actual image, but don't work
+        //String imageUrl = getUploadedFileUrl(req,"image");
 
-        System.out.println("create post and image url : " + imageUrl);
+        Entity userIdentityVerified = UserEntity.googleAuthentification(googleToken);
 
         if(userIdentityVerified == null){
             resp.setStatus(401);
         } else {
             Key userKey = userIdentityVerified.getKey();
-            PostEntity.createPost(userKey, imageUrl, description);
+            PostEntity.createPost(userKey, image, description);
             resp.setStatus(201);
         }
     }
@@ -88,11 +86,11 @@ public class PostServlet extends HttpServlet {
     private String getUploadedFileUrl(HttpServletRequest request, String formInputElementName){
         BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
         Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
-        List<BlobKey> blobKeys = blobs.get("image");
+        List<BlobKey> blobKeys = blobs.get(formInputElementName);
 
         // User submitted form without selecting a file, so we can't get a URL. (devserver)
         if(blobKeys == null || blobKeys.isEmpty()) {
-            return null;
+            return "erreur blob not saved";
         }
 
         // Our form only contains a single file input, so get the first index.
