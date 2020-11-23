@@ -16,8 +16,6 @@ public class UserEntity  {
         entity.setProperty("avatarUrl", avatarUrl);
         entity.setProperty("email", email);
         entity.setProperty("bio", bio);
-
-        //TODO vérifier token glogin, passer par un hash
         entity.setProperty("googleToken", token);
 
         entity.setProperty("lastTimelineRetrieval", new Date());
@@ -77,6 +75,14 @@ public class UserEntity  {
 
         datastore.put(newUser);
 
+    }
+
+    public static int getFollowers(Key user){
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+        Query existUser = new Query("Follow").setFilter(new Query.FilterPredicate("following",Query.FilterOperator.EQUAL, user));
+        PreparedQuery prepareExistUser = datastore.prepare(existUser);
+        return prepareExistUser.asList(FetchOptions.Builder.withDefaults()).size();
     }
 
     public static Key getKey(String email){

@@ -1,209 +1,283 @@
 <html lang="en">
 <head>
-<meta name="google-signin-scope" content="profile email">
-<meta name="google-signin-client_id"
+	<meta name="google-signin-scope" content="profile email">
+	<meta name="google-signin-client_id"
 	content="574330670904-04a68bvdahr1a957ins9a4f2aoto9bqs.apps.googleusercontent.com">
-<script src="https://apis.google.com/js/platform.js" async defer></script>
+	<script src="https://apis.google.com/js/platform.js" async defer></script>
 
 
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
-<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+	<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
 
-<script src="https://unpkg.com/mithril/mithril.js"></script>
+	<script src="https://unpkg.com/mithril/mithril.js"></script>
 
 
 </head>
 <body>
 	<script>
 
-var Profile={
-	modal: function () {
-			var description = "";
-	const view =
-		m('.modal is-active',
-			m('.modal-background', { onclick: () => modalContainer.remove() }),
-			m('.modal-content',
-				m('.box',
-					m('.title.has-text-centered', 'Créer un Post',
-					m('.subtitle', 'Sélectionnez une image et entrez une description')),
-					m("form[enctype=multipart/form-data]", {
-						onsubmit: function(e) {
-							e.preventDefault()
-							Profile.postImage(description)
-						}
-					}, [
-						m("label.label", "image"),
-						m("input.input[type=file][id=imageAPoster]"),
-            m("label.label", "Description"),
-            m("input.input[type=text][placeholder=Description]", {
-							oninput: function (e) {description = e.target.value},
-                value: description
-						}),
-						m("row",
-            	m("button.button[type=submit]", "Poster"),
-							m("button.button[type=button]", {onclick: () => modalContainer.remove() }, "annuler")
-						)])
-        	)
-				)
-			);
-
-	const modalContainer = document.createElement('div');
-	document.body.appendChild(modalContainer);
-	m.render(modalContainer, view);
-},
-
-	blobUrl: "",
-  name:"",
-  email:"",
-  ID:"",
-  url:"",
-  nextToken:"",
-  list:[],
-  view: function(){
-		console.log("profile view googleToken :"+Profile.ID)
-	return m('div', {class:'container'}, [
-  	  m("h1", {class: 'title'}, "name:"+Profile.name),
-	  m("h2", {class: 'subtitle'}, "email:"+Profile.email),
-	  m("img",{"src":Profile.url}),
-	  m("button",{class:"button", onclick: function(e) { Profile.loadList()}},"Msgs"),
-		m('button.button.subtitle',
-	 { onclick: () => Profile.modal() },
-	 'Poster une image'),
-	  m("div",m(PostView,{profile: Profile}))
-	])
-  },
-
-
-  loadList: function() {
-		return m.request({
-				method: "GET",
-				url: "/api/timeline",
-				headers : {
-					"googleToken": Profile.ID,
-					"userEmail": Profile.email
-				}
-				})
-      .then(function(result) {
-      	console.log("load_list:",result)
-      	Profile.list=result.items
-          if ('nextPageToken' in result) {
-	        	Profile.nextToken= result.nextPageToken
-          } else {
-          	Profile.nextToken=""
-          }})
-  },
-  next: function() {
-      return m.request({
-          method: "GET",
-          url: "_ah/api/myApi/v1/collectionresponse_entity",
-          params: {
-        	  'next':Profile.nextToken,
-        	  'access_token': encodeURIComponent(Profile.ID)
-          }
-       })
-      .then(function(result) {
-      	console.log("next:",result)
-      	result.items.map(function(item){Profile.list.push(item)})
-          if ('nextPageToken' in result) {
-	        	Profile.nextToken= result.nextPageToken
-          } else {
-          	Profile.nextToken=""
-          }})
-  },
-
-
-   postMessage: function() {
-		var data={'url': "https://dummyimage.com/320x200/000/fff&text="+Date.now(),
-				'body': "paglop "+Date.now()}
-    	console.log("post:"+data)
-		return m.request({
-    		method: "POST",
-    		url: "_ah/api/myApi/v1/postMsg"+'?access_token='+encodeURIComponent(Profile.ID),
-        	params: data,
-    	})
-	    	.then(function(result) {
-	 			console.log("post_message:",result)
-	 			Profile.loadList()
-    	 	})
+	var Profile={
+		//blobUrl: "",
+		name:"",
+		email:"",
+		ID:"",
+		listMyPosts:[],
+		view: function(){
+			return m('div', {class:'container'}, [
+				m("h1", {class: 'title'}, ""+Profile.name),
+				m("h2", {class: 'subtitle'}, "email:"+Profile.email),
+				m("img",{"src":Profile.url}),
+				m("row",
+				m("button",{class:"button", onclick: function(e) {Profile.searchUserModal()}}, "Search User"),
+				m("button",{class:"button", onclick: function(e) { Profile.loadTimeline()}},"New Posts"),
+				m('button',{class:"button", onclick: function(e) {Profile.createPostModal()}},'Poster une image')
+			)
+			//m("div",m(PostView,{profile: Profile}))
+		])
 	},
 
-	postImage: function(description) {
-		var image = document.getElementById('imageAPoster')
-		var formData = new FormData;
-		formData.append('imageFile',image)
-		console.log(formData);
-		return m.request({
-				method: "POST",
-				url: Profile.blobUrl,
-				body: formData,
-				headers : {
-					"googleToken": Profile.ID,
-					"userEmail": Profile.email,
-					"description": description
-				}
-				})
-      .then(function(result) {
-      	window.alert('Image Postée')
-				})
-	}
+	createPostModal: function () {
+		var description;
+		var image;
+		const view =
+		m('.modal is-active',
+		m('.modal-background', { onclick: () => modalContainer.remove() }),
+		m('.modal-content',
+		m('.box',
+		m('.title.has-text-centered', 'Créer un Post',
+		m('.subtitle', 'Sélectionnez une image et entrez une description')),
+		m("form[enctype=multipart/form-data]", {
+			onsubmit: function(e) {
+				e.preventDefault()
+				Profile.postImage(description, image)
+			}
+		}, [
+			m("label.label", "image"),
+			m("input.input[type=file]", {
+				oninput: function (e) { image = e.target.value},
+				value: image
+			}),
+			m("label.label", "Description"),
+			m("input.input[type=text][placeholder=Description][name=description]", {
+				oninput: function (e){description = e.target.value},
+				value: description
+			}),
+			m("row",
+			m("button.button[type=submit]", "Poster"),
+			m("button.button[type=button]", {onclick: () => modalContainer.remove() }, "annuler")
+		)])
+	)
+)
+);
 
-}
+const modalContainer = document.createElement('div');
+document.body.appendChild(modalContainer);
+m.render(modalContainer, view);
+},
 
-var PostView = {
-		  view: function(vnode) {
-		   	return m('div', [
-			  m('div',{class:'subtitle'},"My Posts"),
-			  m('table', {class:'table is-striped',"table":"is-striped"},[
-			    m('tr', [
-				  m('th', {width:"50px"}, "like"),
-				  m('th', {width:"50px"}, "del"),
-			      m('th', {width:"50px"}, "Bodys"),
-			      m('th', {width:"50px"}, "Urls"),
-			      m('th', {width:"50px"}, "Like"),
-			    ]),
-			    vnode.attrs.profile.list.map(function(item) {
-			      return m("tr", [
-		            m("td", m("button", {onclick: function(e) {
-						console.log("like:"+item.key.id)
-		                 }},"like")),
-		                 m("td", m("button", {onclick: function(e) {
-		     				console.log("del:"+item.key.id)
-		                 }},"del")),
-			        m('td', m('label', item.properties.body)),
-			        m('td', m('img', {class: 'is-rounded', 'src': item.properties.url})),
-			        m('td', m('label', item.properties.likec)),
-			      ])
-			    }),
-//			    m("div", isError ? "An error occurred" : "Saved"),
-			    m('button',{
-				      class: 'button is-link',
-				      onclick: function(e) {vnode.attrs.profile.next()}
-				      },
-				  "Next"),
-			   ])
-			 ])
-		  }
+searchUserModal: function () {
+	var name;
+	const view =
+	m('.modal is-active',
+	m('.modal-background', { onclick: () => modalSearchUser.remove() }),
+	m('.modal-content',
+	m('.box',
+	m('.title.has-text-centered', 'Search a user',
+	m("form[enctype=multipart/form-data]", {
+		onsubmit: function(e) {
+			e.preventDefault()
+			modalSearchUser.remove()
+			Profile.searchUser(name)
 		}
+	}, [
+		m("label.label", "Username"),
+		m("input.input[type=text][placeholder=Username]", {
+			oninput: function (e){name = e.target.value},
+			value: name
+		}),
+		m("row",
+		m("button.button[type=submit]", "Search"),
+		m("button.button[type=button]", {onclick: () => modalContainer.remove() }, "annuler")
+	)])
+)
+)
+));
 
+const modalSearchUser = document.createElement('div');
+document.body.appendChild(modalSearchUser);
+m.render(modalSearchUser, view);
+},
 
-function onSignIn(googleUser) {
+searchUser(name){
+	m.request({
+		method: "GET",
+		url: "/api/user",
+		headers : {
+			"googleToken": Profile.ID,
+			"userName": name
+		}
+	}).then(function(result) {
+		return(
+			m("div", {class:'container'},[
+				m("div", {class:'container',
+					for( i = 0; i < result.len() ; i++) {
+						name: result[i].firstName + ' ' + result[i].lastName;
+					}, [
+						m('button',{class:"button", onclick: function(e) {Profile.userProfile(result[i])}}, name+"")
+					])
+			]))
+		};
+	})
+},
 
-  var profile = googleUser.getBasicProfile();
-	Profile.name=profile.getName();
-  Profile.email=profile.getEmail();
-  Profile.ID=googleUser.getAuthResponse().id_token;
-  Profile.url=profile.getImageUrl();
+userProfile: function(user){
+	console.log(user)
+	const view =
+	 m('div', {class:'container'}, [
+			m("h1", {class: 'title'}, ""+user.firstName),
+			m("h2", {class: 'subtitle'}, "email:"+user.email),
+			m("img",{"src":Profile.url}),
+			m("row",
+			m("button",{class:"button", onclick: function(e) {userProfile.follow()}}, "follow")
+		),
+		m("div",m(PostView,{profile: Profile}))
+	])
+},
 
-	console.log("googleToken :" + Profile.ID)
+postImage: function(description, image) {
+	//var image = document.getElementById('imageAPoster')
+	var formData = new FormData();
+	formData.append('image',image)
+	formData.appedn('description', description)
 
-	m.route.set("/profile")
+	console.log("image a poster:")
+	console.log(image)
 
 	return m.request({
+		method: "POST",
+		url: Profile.blobUrl,
+		body: formData,
+		headers : {
+			"googleToken": Profile.ID,
+			"userEmail": Profile.email,
+			"description": description
+		}
+	})
+	.then(function(result) {
+		window.alert('Image Postée')
+	})
+},
+
+
+loadList: function() {
+	return m.request({
+		method: "GET",
+		url: "/api/timeline",
+		headers : {
+			"googleToken": Profile.ID,
+			"userEmail": Profile.email
+		}
+	})
+	.then(function(result) {
+		console.log("load_list:",result)
+		Profile.list=result.items
+		if ('nextPageToken' in result) {
+			Profile.nextToken= result.nextPageToken
+		} else {
+			Profile.nextToken=""
+		}})
+	},
+	next: function() {
+		return m.request({
+			method: "GET",
+			url: "_ah/api/myApi/v1/collectionresponse_entity",
+			params: {
+				'next':Profile.nextToken,
+				'access_token': encodeURIComponent(Profile.ID)
+			}
+		})
+		.then(function(result) {
+			console.log("next:",result)
+			result.items.map(function(item){Profile.list.push(item)})
+			if ('nextPageToken' in result) {
+				Profile.nextToken= result.nextPageToken
+			} else {
+				Profile.nextToken=""
+			}})
+		},
+
+
+		postMessage: function() {
+			var data={'url': "https://dummyimage.com/320x200/000/fff&text="+Date.now(),
+			'body': "paglop "+Date.now()}
+			console.log("post:"+data)
+			return m.request({
+				method: "POST",
+				url: "_ah/api/myApi/v1/postMsg"+'?access_token='+encodeURIComponent(Profile.ID),
+				params: data,
+			})
+			.then(function(result) {
+				console.log("post_message:",result)
+				Profile.loadList()
+			})
+		}
+
+	}
+
+
+	var PostView = {
+		view: function(vnode) {
+			return m('div', [
+				m('div',{class:'subtitle'},"My Posts"),
+				m('table', {class:'table is-striped',"table":"is-striped"},[
+					m('tr', [
+						m('th', {width:"50px"}, "like"),
+						m('th', {width:"50px"}, "del"),
+						m('th', {width:"50px"}, "Bodys"),
+						m('th', {width:"50px"}, "Urls"),
+						m('th', {width:"50px"}, "Like"),
+					]),
+					vnode.attrs.profile.list.map(function(item) {
+						return m("tr", [
+							m("td", m("button", {onclick: function(e) {
+								console.log("like:"+item.key.id)
+							}},"like")),
+							m("td", m("button", {onclick: function(e) {
+								console.log("del:"+item.key.id)
+							}},"del")),
+							m('td', m('label', item.properties.body)),
+							m('td', m('img', {class: 'is-rounded', 'src': item.properties.url})),
+							m('td', m('label', item.properties.likec)),
+						])
+					}),
+					//			    m("div", isError ? "An error occurred" : "Saved"),
+					m('button',{
+						class: 'button is-link',
+						onclick: function(e) {vnode.attrs.profile.next()}
+					},
+					"Next"),
+				])
+			])
+		}
+	}
+
+
+	function onSignIn(googleUser) {
+
+		var profile = googleUser.getBasicProfile();
+		Profile.name=profile.getName();
+		Profile.email=profile.getEmail();
+		Profile.ID=googleUser.getAuthResponse().id_token;
+		Profile.url=profile.getImageUrl();
+
+		m.route.set("/profile")
+
+		return m.request({
 			method: "GET",
 			url: "/api/login",
 			headers : {
@@ -215,34 +289,34 @@ function onSignIn(googleUser) {
 			Profile.blobUrl = response
 		})
 
-}
+	}
 
-var Login = {
-  view: function() {
- 	return m('div', {class:'container'}, [
-      m("h1", {class: 'title'}, 'The TinyGram Post'),
-      m("div", {
-      	   "class":"g-signin2",
-      	   "data-theme":"dark",
-      	   "data-onsuccess": "onSignIn"}),
-      ])
-    }
-}
+	var Login = {
+		view: function() {
+			return m('div', {class:'container'}, [
+				m("h1", {class: 'title'}, 'The TinyGram Post'),
+				m("div", {
+					"class":"g-signin2",
+					"data-theme":"dark",
+					"data-onsuccess": "onSignIn"}),
+				])
+			}
+		}
 
-m.route(document.body, "/profile", {
-  "/profile": { onmatch: function() {
-            	if (Profile.ID=="") {m.route.set("/login")}
-            	else return Profile
-        		}},
-  "/login": Login,
-	"/createPost": { onmatch: function() {
-					if (Profile.ID=="") {m.route.set("/login")}
-            	else return createPost
-	}}
-})
+		m.route(document.body, "/profile", {
+			"/profile": { onmatch: function() {
+				if (Profile.ID=="") {m.route.set("/login")}
+				else return Profile
+			}},
+			"/login": Login,
+			"/timeline": { onmatch: function() {
+				if (Profile.ID=="") {m.route.set("/login")}
+				else return createPost
+			}}
+		})
 
-	</script>
+		</script>
 
 
-</body>
-</html>
+	</body>
+	</html>

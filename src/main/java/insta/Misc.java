@@ -51,6 +51,7 @@ public class Misc {
         }
     }
 
+
     public static void fillDatabase() throws EntityNotFoundException {
         LinkedList<String> firstName = new LinkedList<String>();
         LinkedList<String> lastName1 = new LinkedList<String>();
@@ -88,21 +89,23 @@ public class Misc {
         lastName2.add("Alderson");
 
         for(String name : firstName){
-            for(String name1 : lastName2) {
-                for (String name2 : lastName1) {
-                    Key newUser =(UserEntity.createUser(name, name1 + '-' + name2, name + '.' + name1 + mail, "", "", name + '-' + name1));
+            for(String name1 : lastName1) {
+                for (String name2 : lastName2) {
+                    String lastNameTmp = name1 + '-' + name2 ;
+                    Key newUser =(UserEntity.createUser(name, lastNameTmp , name + '.' + lastNameTmp + mail, "", "", name + '-' + lastNameTmp));
+                    UserEntity.googleAuthentification(name + '-' + name1 + '-' + name2);
                     users.add(newUser);
                     //every user has one post
-                    PostEntity.createPost(newUser,"image "+name+" "+name1+" "+name2,"description");
+                    PostEntity.createPost(newUser,"image "+name+" "+lastNameTmp,"description");
                     int usersCreated = users.size();
                     if(usersCreated > 1 ){
                         //first user followed by everyone (599 pers)
                         UserEntity.follow(newUser, users.getFirst());
                     }
-                    if(usersCreated > 2 && usersCreated < 102){
+                    if(usersCreated > 2 && usersCreated < 103){
                         UserEntity.follow(newUser, users.get(2));
                     }
-                    if(usersCreated > 3 && usersCreated < 13){
+                    if(usersCreated > 3 && usersCreated < 14){
                         UserEntity.follow(newUser, users.get(3));
                     }
                 }

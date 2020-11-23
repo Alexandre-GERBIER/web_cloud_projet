@@ -21,9 +21,9 @@ public class Post {
 
     public Post(Entity post){
         this.postKey = post.getKey();
-        this.userKey = (String) post.getProperty("User");
-        this.image = (String) post.getProperty("image");
-        this.description = (String) post.getProperty("description");
+        this.userKey = (String) post.getProperty("User").toString();
+        this.image = (String) post.getProperty("image").toString();
+        this.description = (String) post.getProperty("description").toString();
         this.timestamp = (Date) post.getProperty("timestamp");
     }
 

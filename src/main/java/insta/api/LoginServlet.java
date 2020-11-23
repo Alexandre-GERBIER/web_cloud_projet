@@ -28,11 +28,12 @@ public class LoginServlet extends HttpServlet {
         String googleToken = req.getHeader("googleToken");
         String userEmail = req.getHeader("userEmail");
         String userName = req.getHeader("userName");
+        String[] name = userName.split(" ");
 
         Entity userVerified = UserEntity.googleAuthentification(googleToken);
 
         if( userVerified == null){
-            UserEntity.createUser(userName, userEmail, null, null, googleToken);
+            UserEntity.createUser(name[0], name[1], userEmail, null, null, googleToken);
         }
 
         response.setStatus(200);

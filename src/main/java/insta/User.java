@@ -2,6 +2,7 @@ package insta;
 
 import com.google.api.client.util.DateTime;
 import com.google.appengine.api.datastore.*;
+import insta.datastore.UserEntity;
 
 import java.time.Instant;
 import java.util.Date;
@@ -14,6 +15,7 @@ public class User {
     private String avatarUrl;
     private String bio;
     private Key key;
+    private int followers;
 
     public User(Entity user){
         this.key = user.getKey();
@@ -22,6 +24,7 @@ public class User {
         this.email = (String) user.getProperty("email");
         this.avatarUrl = (String) user.getProperty("avatarUrl");
         this.bio = (String) user.getProperty("bio");
+        this.followers = UserEntity.getFollowers(this.key);
     }
 
 
