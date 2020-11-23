@@ -3,7 +3,10 @@ package insta.api;
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.*;
+import com.google.appengine.repackaged.com.google.gson.Gson;
 import insta.User;
 import insta.datastore.UserEntity;
 
@@ -21,7 +24,7 @@ import java.io.IOException;
 public class LoginServlet extends HttpServlet {
 
     @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse response) throws IOException {
         String googleToken = req.getHeader("googleToken");
         String userEmail = req.getHeader("userEmail");
         String userName = req.getHeader("userName");
@@ -32,6 +35,14 @@ public class LoginServlet extends HttpServlet {
             UserEntity.createUser(userName, userEmail, null, null, googleToken);
         }
 
-        resp.setStatus(200);
+        response.setStatus(200);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+        String uploadUrl = blobstoreService.createUploadUrl("/api/post");
+
+        response.getWriter().print(new Gson().toJson(uploadUrl));
     }
 }

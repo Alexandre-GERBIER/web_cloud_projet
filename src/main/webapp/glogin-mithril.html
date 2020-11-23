@@ -23,8 +23,7 @@
 
 var Profile={
 	modal: function () {
-		var image =  "";
-		var description = "";
+			var description = "";
 	const view =
 		m('.modal is-active',
 			m('.modal-background', { onclick: () => modalContainer.remove() }),
@@ -32,31 +31,33 @@ var Profile={
 				m('.box',
 					m('.title.has-text-centered', 'Créer un Post',
 					m('.subtitle', 'Sélectionnez une image et entrez une description')),
-					m("form", [
-            m("label.label", "image"),
-            m("input.input[type=text][placeholder=image]", {
-							oninput: function (e) {image = e.target.value}, value: image
-						}),
-			m("label.label", "image (seulement au format PNG/JPEG)"),
-			m("input.input[type=file][placeholder=image-selector][accept=image/png,image/jpeg]", {
-							oninput: function (e) {image = e.target.value}, value: image
-						}),
+					m("form[enctype=multipart/form-data]", {
+						onsubmit: function(e) {
+							e.preventDefault()
+							Profile.postImage(description)
+						}
+					}, [
+						m("label.label", "image"),
+						m("input.input[type=file][id=imageAPoster]"),
             m("label.label", "Description"),
-            m("input.input[placeholder=Description]", {
-							oninput: function (e) {description = e.target.value}, value: description})
-					]),
-					m("row",
-            m("button.button[type=button]",{ onclick: () => Profile.postImage(image,description)}, "Poster"),
-						m("button.button[type=button]", {onclick: () => modalContainer.remove() }, "annuler")
+            m("input.input[type=text][placeholder=Description]", {
+							oninput: function (e) {description = e.target.value},
+                value: description
+						}),
+						m("row",
+            	m("button.button[type=submit]", "Poster"),
+							m("button.button[type=button]", {onclick: () => modalContainer.remove() }, "annuler")
+						)])
         	)
 				)
-			));
+			);
 
 	const modalContainer = document.createElement('div');
 	document.body.appendChild(modalContainer);
 	m.render(modalContainer, view);
 },
 
+	blobUrl: "",
   name:"",
   email:"",
   ID:"",
@@ -64,6 +65,7 @@ var Profile={
   nextToken:"",
   list:[],
   view: function(){
+		console.log("profile view googleToken :"+Profile.ID)
 	return m('div', {class:'container'}, [
   	  m("h1", {class: 'title'}, "name:"+Profile.name),
 	  m("h2", {class: 'subtitle'}, "email:"+Profile.email),
@@ -113,6 +115,8 @@ var Profile={
           	Profile.nextToken=""
           }})
   },
+
+
    postMessage: function() {
 		var data={'url': "https://dummyimage.com/320x200/000/fff&text="+Date.now(),
 				'body': "paglop "+Date.now()}
@@ -128,14 +132,18 @@ var Profile={
     	 	})
 	},
 
-	postImage: function( image, description) {
+	postImage: function(description) {
+		var image = document.getElementById('imageAPoster')
+		var formData = new FormData;
+		formData.append('imageFile',image)
+		console.log(formData);
 		return m.request({
 				method: "POST",
-				url: "/api/post",
+				url: Profile.blobUrl,
+				body: formData,
 				headers : {
 					"googleToken": Profile.ID,
 					"userEmail": Profile.email,
-					"image": image,
 					"description": description
 				}
 				})
@@ -191,6 +199,8 @@ function onSignIn(googleUser) {
   Profile.ID=googleUser.getAuthResponse().id_token;
   Profile.url=profile.getImageUrl();
 
+	console.log("googleToken :" + Profile.ID)
+
 	m.route.set("/profile")
 
 	return m.request({
@@ -201,7 +211,9 @@ function onSignIn(googleUser) {
 				"userEmail": Profile.email,
 				"userName": Profile.name
 			}
-			})
+		}).then(response => {
+			Profile.blobUrl = response
+		})
 
 }
 

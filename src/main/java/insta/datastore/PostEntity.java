@@ -19,6 +19,8 @@ public class PostEntity {
         entity.setProperty("description", description);
         entity.setProperty("timestamp", ts);
         entity.setProperty("image", image);
+
+        datastore.put(entity);
     }
 
     /**
