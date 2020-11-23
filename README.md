@@ -31,7 +31,7 @@ le nom ou le prénom de l'utilisateur recherché.
 
 * POST /api/unlike (fonctionne):
 
-##Format des données
+## Format des données
 Listes des différentes entités et de leurs propriétés:
 * User : Key(email), fistName, lastName, avatarUrl, email, bio, googletoken, lastTimelineRetrieval
 
@@ -83,14 +83,17 @@ L'utilisateur Jake Smith-Holt a 100 followers et suit 100 personnes.
 
 L'utilisateur Jake Smith-Santiago a 10 followers et suit 10 personnes.
 
-##Benchmark
+## Benchmarks
 
-###Poster un message
+Le projet n'étant pas fonctionnel, je n'ai pas pu réaliser les benchmark demandés. MAis je pense que vu les choix d'implémentation
+que j'ai fait, je serais bien au dessus des 500ms du sujet, par exemple pour récupérer les derniers posts.  
+
+### Poster un message
 Le post est réalisé en temps constant car il est indépendant du nombre de followers
 
-###Récupérer les derniers posts
+### Récupérer les derniers posts
 Ne fonctionne pas
 
-###Like per second
+### Like per second
 Fonctionne en temps constant car indépendant du Post. Mais je pense que ca peux poser un problème de 
 taille des données et de taille des réponses lorsqu'on les compte.
