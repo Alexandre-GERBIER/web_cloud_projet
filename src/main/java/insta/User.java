@@ -8,7 +8,8 @@ import java.util.Date;
 import java.util.HashSet;
 
 public class User {
-    private String name;
+    private String firstName;
+    private String lastName;
     private String email;
     private String avatarUrl;
     private String bio;
@@ -16,7 +17,8 @@ public class User {
 
     public User(Entity user){
         this.key = user.getKey();
-        this.name = (String) user.getProperty("name");
+        this.firstName = (String) user.getProperty("firstName");
+        this.lastName = (String) user.getProperty("lastName");
         this.email = (String) user.getProperty("email");
         this.avatarUrl = (String) user.getProperty("avatarUrl");
         this.bio = (String) user.getProperty("bio");

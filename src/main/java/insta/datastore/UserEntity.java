@@ -7,11 +7,12 @@ import java.util.Date;
 
 public class UserEntity  {
 
-    public static void createUser(String name, String email, String bio, String avatarUrl, String token ) {
+    public static Key createUser(String firstName, String lastName, String email, String bio, String avatarUrl, String token ) {
         DatastoreService datastore  = DatastoreServiceFactory.getDatastoreService();
 
         Entity entity = new Entity("User", email);
-        entity.setProperty("name", name);
+        entity.setProperty("firstName", firstName);
+        entity.setProperty("lastName", lastName);
         entity.setProperty("avatarUrl", avatarUrl);
         entity.setProperty("email", email);
         entity.setProperty("bio", bio);
@@ -21,7 +22,7 @@ public class UserEntity  {
 
         entity.setProperty("lastTimelineRetrieval", new Date());
 
-        datastore.put(entity);
+        return (datastore.put(entity));
     }
 
     /**
